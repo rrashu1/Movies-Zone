@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix - Your Entertainment Hub</title>
+    <style>
+        :root {
+            --primary-color: #e50914;
+            --background-color: #141414;
+            --card-color: #2f2f2f;
+            --text-color: #ffffff;
+            --text-secondary-color: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4%;
+        }
+
+        /* --- Header and Search --- */
+        header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2rem;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .search-container {
+            display: flex;
+            width: 30%;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            outline: none;
+        }
+
+        /* --- Movie Rows Section --- */
+        .movies-section {
+            margin-top: 20px;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .movie-row {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 20px; /* For scrollbar */
+            gap: 15px;
+        }
+
+        .movie-row::-webkit-scrollbar { height: 8px; }
+        .movie-row::-webkit-scrollbar-track { background: #222; border-radius: 4px; }
+        .movie-row::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .movie-row::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        .movie-card {
+            flex: 0 0 160px; /* width */
+            height: 240px; /* height */
+            background-color: var(--card-color);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.08);
+            z-index: 10;
+        }
+
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; }
+        .movie-card-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.9rem; padding: 10px; }
+
+        .poster-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .netflix-logo { position: absolute; top: 8px; left: 8px; width: 16px; height: 16px; font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
+        .top-10-badge { position: absolute; top: 8px; right: 8px; background-color: var(--primary-color); color: white; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; border-radius: 2px; }
+        #message-area { text-align: center; font-size: 1.2rem; margin-top: 40px; color: var(--text-secondary-color); }
+
+        /* --- Modal for Details --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.85); }
+        .modal-content { background-color: #181818; margin: 5% auto; padding: 30px; border-radius: 10px; width: 80%; max-width: 800px; position: relative; animation: slideIn 0.5s; }
+        @keyframes slideIn { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+        .close-button { color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close-button:hover, .close-button:focus { color: white; }
+        
+        #modal-loader { text-align:center; padding: 50px; font-size: 1.5rem; }
+        #modal-body { display: none; flex-direction: row; gap: 30px; }
+        #modal-poster { max-width: 300px; border-radius: 8px; align-self: flex-start; }
+        #modal-info { flex: 1; }
+        #modal-title-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        #modal-title { color: var(--text-color); margin: 0; font-size: 2.2rem;}
+        #modal-adult-badge { background-color: var(--primary-color); color: white; padding: 3px 8px; font-size: 0.8rem; font-weight: bold; border-radius: 4px; }
+        
+        .meta-info-container { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-bottom: 20px; color: #ccc; }
+        .meta-info-container span { display: inline-flex; align-items: center; gap: 5px; }
+        #modal-rating .star { color: #f5c518; }
+        
+        .plot { line-height: 1.6; margin-bottom: 20px; }
+        .original-title-section { font-size: 0.9rem; color: var(--text-secondary-color); margin-bottom: 25px; }
+        .original-title-section b { color: var(--text-color); }
+
+        .credits-section { margin-top: 20px; }
+        .credits-section h3 { border-bottom: 2px solid #444; padding-bottom: 8px; margin-bottom: 15px; }
+        .credits-list { list-style: none; padding: 0; column-gap: 20px; }
+        .credits-list li { margin-bottom: 8px; }
+        .credits-list .character { color: #aaa; font-style: italic; }
+
+        #directors-list, #writers-list { columns: 2; }
+        #cast-list { columns: 2; }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .search-container { width: 100%; margin-top: 15px; }
+            #modal-body { flex-direction: column; align-items: center; }
+            #directors-list, #writers-list, #cast-list { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>MovieFlix</h1>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search movies or series...">
+            </div>
+        </header>
+
+        <main id="movie-rows-container">
+            <section id="search-results-section" style="display: none;">
+                <h2 class="category-title">Search Results</h2>
+                <div class="movie-row" id="search-results-row"></div>
+            </section>
+            
+            <div id="message-area">Loading the page...</div>
+
+            <section>
+                <h2 class="category-title">Popular Action</h2>
+                <div class="movie-row" id="action-movies-row"></div>
+            </section>
+            <section>
+                <h2 class="category-title">Top Comedy</h2>
+                <div class="movie-row" id="comedy-movies-row"></div>
+            </section>
+             <section>
+                <h2 class="category-title">Best Thrillers</h2>
+                <div class="movie-row" id="thriller-movies-row"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="modal-loader">Loading details...</div>
+            <div id="modal-body">
+                <img id="modal-poster" src="" alt="Movie Poster">
+                <div id="modal-info">
+                    <div id="modal-title-header">
+                        <h2 id="modal-title"></h2>
+                        <span id="modal-adult-badge" style="display: none;">18+</span>
+                    </div>
+                    
+                    <div class="meta-info-container">
+                        <span id="modal-year"></span>
+                        <span id="modal-type"></span>
+                        <span id="modal-runtime"></span>
+                        <span id="modal-rating"><span class="star">&#9733;</span> </span>
+                        <span id="modal-votes"></span>
+                    </div>
+
+                    <div id="modal-genres" class="meta-info-container" style="margin-bottom: 25px;"></div>
+
+                    <p class="plot" id="modal-plot"></p>
+
+                    <div id="original-title-section" style="display: none;">
+                        <b>Original Title:</b> <span id="modal-original-title"></span>
+                    </div>
+                    
+                    <div class="credits-section" id="directors-section">
+                        <h3>Directors</h3>
+                        <ul id="directors-list" class="credits-list"></ul>
+                    </div>
+
+                    <div class="credits-section" id="writers-section">
+                        <h3>Writers</h3>
+                        <ul id="writers-list" class="credits-list"></ul>
+                    </div>
+
+                    <div class="credits-section" id="cast-section">
+                        <h3>Cast</h3>
+                        <ul id="cast-list" class="credits-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://rest.imdbapi.dev';
+        
+        // DOM Elements
+        const searchInput = document.getElementById('search-input');
+        const movieRowsContainer = document.getElementById('movie-rows-container');
+        const searchResultsSection = document.getElementById('search-results-section');
+        const searchResultsRow = document.getElementById('search-results-row');
+        const messageArea = document.getElementById('message-area');
+        const modal = document.getElementById('details-modal');
+        const closeModalButton = document.querySelector('.close-button');
+        const modalLoader = document.getElementById('modal-loader');
+        const modalBody = document.getElementById('modal-body');
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+        
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') performSearch();
+        });
+        
+        movieRowsContainer.addEventListener('click', (event) => {
+            const card = event.target.closest('.movie-card');
+            if (card && card.dataset.titleId) showMovieDetails(card.dataset.titleId);
+        });
+
+        closeModalButton.addEventListener('click', () => { modal.style.display = 'none'; });
+        window.addEventListener('click', (event) => { if (event.target == modal) modal.style.display = 'none'; });
+
+        // --- Core Functions ---
+        
+        function initializeApp() {
+            fetchAndDisplayRow('action', '#action-movies-row');
+            fetchAndDisplayRow('comedy', '#comedy-movies-row');
+            fetchAndDisplayRow('thriller', '#thriller-movies-row');
+            messageArea.style.display = 'none';
+        }
+
+        async function fetchAndDisplayRow(query, containerSelector) {
+            const container = document.querySelector(containerSelector);
+            try {
+                const response = await fetch(`${API_BASE_URL}/v2/search/titles?query=${encodeURIComponent(query)}&page_size=20`);
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                container.innerHTML = (data.titles && data.titles.length > 0)
+                    ? data.titles.map((title, index) => createMovieCardHTML(title, index)).join('')
+                    : `<p style="color: var(--text-secondary-color);">No movies found.</p>`;
+            } catch (error) {
+                console.error(`Failed to fetch row for ${query}:`, error);
+                container.innerHTML = `<p style="color: var(--text-secondary-color);">Could not load this category.</p>`;
+            }
+        }
+        
+        function createMovieCardHTML(title, index) {
+            const posterUrl = title.primary_image ? title.primary_image.url : '';
+            const posterElement = posterUrl 
+                ? `<img src="${posterUrl}" alt="${title.primary_title}">` 
+                : `<div class="movie-card-placeholder">${title.primary_title}</div>`;
+            const top10Badge = (index < 3 && Math.random() > 0.5) ? `<div class="top-10-badge">TOP 10</div>` : '';
+
+            return `
+                <div class="movie-card" data-title-id="${title.id}">
+                    ${posterElement}
+                    <div class="poster-overlay">
+                        <div class="netflix-logo">N</div>
+                        ${top10Badge}
+                    </div>
+                </div>`;
+        }
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            searchResultsSection.style.display = query ? 'block' : 'none';
+            if (query) {
+                searchResultsRow.innerHTML = `<p>Searching...</p>`;
+                fetchAndDisplayRow(query, '#search-results-row');
+            }
+        }
+        
+        async function showMovieDetails(titleId) {
+            modal.style.display = 'block';
+            modalLoader.style.display = 'block';
+            modalBody.style.display = 'none';
+
+            try {
+                // Fetch title details and all credits in parallel
+                const [titleResponse, creditsResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/v2/titles/${titleId}`),
+                    fetch(`${API_BASE_URL}/v2/titles/${titleId}/credits?categories=DIRECTOR&categories=WRITER&categories=CAST`)
+                ]);
+
+                if (!titleResponse.ok || !creditsResponse.ok) throw new Error('Failed to fetch details from API');
+
+                const titleData = await titleResponse.json();
+                const creditsData = await creditsResponse.json();
+
+                populateModal(titleData, creditsData.credits);
+                
+            } catch (error) {
+                console.error('Failed to get movie details:', error);
+                modalLoader.textContent = 'Sorry, could not fetch details.';
+            }
+        }
+        
+        function populateModal(title, credits) {
+            // Populate Basic Info
+            const posterUrl = title.primary_image ? title.primary_image.url : '';
+            document.getElementById('modal-poster').src = posterUrl;
+            document.getElementById('modal-poster').style.display = posterUrl ? 'block' : 'none';
+            document.getElementById('modal-title').textContent = title.primary_title || 'N/A';
+            document.getElementById('modal-plot').textContent = title.plot || 'Plot is not available.';
+            
+            // Populate Meta Info
+            document.getElementById('modal-year').textContent = title.start_year ? (title.end_year ? `${title.start_year}–${title.end_year}` : title.start_year) : 'N/A';
+            document.getElementById('modal-type').textContent = title.type || 'N/A';
+            document.getElementById('modal-runtime').textContent = title.runtime_minutes ? `${title.runtime_minutes} min` : 'N/A';
+            document.getElementById('modal-rating').innerHTML = `<span class="star">&#9733;</span> ${title.rating ? title.rating.aggregate_rating.toFixed(1) : 'N/A'}`;
+            document.getElementById('modal-votes').textContent = title.rating ? `${title.rating.votes_count.toLocaleString()} votes` : '';
+            document.getElementById('modal-genres').innerHTML = title.genres ? title.genres.map(g => `<span>${g}</span>`).join('') : '<span>N/A</span>';
+            
+            // Adult Badge
+            const adultBadge = document.getElementById('modal-adult-badge');
+            adultBadge.style.display = title.is_adult ? 'inline-block' : 'none';
+
+            // Original Title
+            const originalTitleSection = document.getElementById('original-title-section');
+            if (title.original_title && title.original_title !== title.primary_title) {
+                document.getElementById('modal-original-title').textContent = title.original_title;
+                originalTitleSection.style.display = 'block';
+            } else {
+                originalTitleSection.style.display = 'none';
+            }
+
+            // Process and Populate Credits
+            const directors = [], writers = [], cast = [];
+            if (credits) {
+                credits.forEach(credit => {
+                    if (credit.category === 'DIRECTOR') directors.push(credit.name.display_name);
+                    else if (credit.category === 'WRITER') writers.push(credit.name.display_name);
+                    else if (credit.category === 'CAST' || credit.category === 'ACTOR' || credit.category === 'ACTRESS') {
+                        const character = credit.characters ? ` as ${credit.characters.join(', ')}` : '';
+                        cast.push(`<b>${credit.name.display_name}</b><span class="character">${character}</span>`);
+                    }
+                });
+            }
+
+            populateCreditList('#directors-list', directors);
+            populateCreditList('#writers-list', writers);
+            populateCreditList('#cast-list', cast.slice(0, 12)); // Show top 12 cast members
+            
+            // Show content
+            modalLoader.style.display = 'none';
+            modalBody.style.display = 'flex';
+        }
+
+        function populateCreditList(selector, data) {
+            const list = document.querySelector(selector);
+            const section = list.closest('.credits-section');
+            if (data && data.length > 0) {
+                list.innerHTML = data.map(item => `<li>${item}</li>`).join('');
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+    </script>
+</body>
+</html>

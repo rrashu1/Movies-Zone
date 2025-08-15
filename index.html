@@ -1,34 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineVerse - Explore Movies & TV Shows</title>
-
-    <!-- Facebook Open Graph Meta Tags -->
-    <meta property="og:title" content="CineVerse - Explore Movies & TV Shows" />
-    <meta property="og:description" content="Discover and explore a universe of movies and TV shows. Find popular, top-rated, and new releases, watch trailers, and see where to watch." />
-    <meta property="og:image" content="https://i.postimg.cc/WznL65D5/59e78f7f17d18ccd404e41a82b6434d2.jpg" />
-    <meta property="og:url" content="./index.html" />
-    <meta property="og:type" content="website" />
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
+    <title>MovieFlix - Watch TV Shows & Movies</title>
     <style>
+        /* --- বেসিক স্টাইল --- */
         :root {
-            --primary-color: #00d1ff; /* Bright Cyan */
-            --secondary-color: #d400ff; /* Vibrant Pink/Magenta */
-            --background-color: #0c0a1a; /* Deep Indigo */
-            --surface-color: #1a163a;
-            --text-color: #e0e0e0;
-            --text-secondary-color: #a0a0c0;
-            --card-background: #1f1d44;
-            --glass-bg: rgba(26, 22, 58, 0.6);
+            --primary-color: #e50914; /* Netflix Red */
+            --dark-color: #141414;
+            --light-color: #f4f4f4;
+            --grey-color: #8c8c8c;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,584 +20,200 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            background-image: radial-gradient(circle at 1% 1%, var(--surface-color) 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        
-        .container { max-width: 1600px; margin: 0 auto; padding: 0 4%; }
 
-        /* Header */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 4%;
+        /* --- হেডার এবং লোগো --- */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 3rem;
+            position: sticky;
+            top: 0;
+            background-color: rgba(20, 20, 20, 0.8);
             z-index: 100;
-            transition: background-color 0.4s ease, box-shadow 0.4s ease;
-        }
-        header.scrolled {
-            background-color: var(--glass-bg);
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        header h1 {
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            margin: 0;
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--secondary-color);
-        }
-        .search-container { display: flex; width: 35%; }
-        #search-input { width: 100%; padding: 12px 20px; font-size: 1rem; border: 1px solid var(--surface-color); border-radius: 50px; background-color: rgba(12, 10, 26, 0.5); color: var(--text-color); outline: none; transition: all 0.3s; }
-        #search-input:focus { border-color: var(--primary-color); box-shadow: 0 0 15px rgba(0, 209, 255, 0.6); }
 
-        /* Hero Banner */
-        #hero-banner {
-            height: 90vh;
+        .logo {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- প্রধান কনটেইনার --- */
+        .main-container {
+            padding: 1rem 3rem;
+        }
+
+        /* --- মুভি ক্যাটাগরি --- */
+        .category {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+        }
+
+        /* --- মুভির তালিকা (স্লাইডার) --- */
+        .movie-list {
             display: flex;
-            align-items: center;
-            background-size: cover;
-            background-position: center top;
-            position: relative;
-            padding: 0 4%;
-            box-sizing: border-box;
-            color: white;
-            animation: fadeIn 1.5s ease-in-out;
+            overflow-y: hidden;
+            overflow-x: scroll;
+            padding-bottom: 1.5rem;
+            /* স্ক্রলবার স্টাইল */
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--dark-color);
         }
-        #hero-banner::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(12, 10, 26, 1) 25%, rgba(12, 10, 26, 0.4) 60%, rgba(12, 10, 26, 0) 100%);
-        }
-        .hero-content { position: relative; z-index: 2; max-width: 650px; }
-        #hero-title { font-family: 'Poppins', sans-serif; font-size: 4rem; font-weight: 700; margin: 0; text-shadow: 3px 3px 8px #000; }
-        #hero-overview { font-size: 1.1rem; margin: 20px 0; line-height: 1.6; max-width: 90%; }
-        #hero-details-btn { 
-            padding: 15px 35px; font-size: 1.1rem; font-weight: 600;
-            background-image: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-            background-size: 200% auto;
-            color: white; border: none; border-radius: 50px; cursor: pointer; 
-            transition: background-position 0.5s;
-            box-shadow: 0 4px 20px rgba(212, 0, 255, 0.4);
-        }
-        #hero-details-btn:hover { background-position: right center; }
-        .hero-meta { display: flex; gap: 15px; margin-top: 15px; }
-        .hero-meta .genre-tag { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; }
 
+        .movie-list::-webkit-scrollbar {
+            height: 8px;
+        }
 
-        /* Movie Rows & Scroll Buttons */
-        .category-wrapper { 
-            position: relative; 
-            margin-top: 50px;
-            /* For scroll animation */
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        .movie-list::-webkit-scrollbar-track {
+            background: var(--dark-color);
+            border-radius: 10px;
         }
-        .category-wrapper.visible {
-             opacity: 1;
-             transform: translateY(0);
-        }
-        .category-title { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 600; margin-bottom: 20px; }
-        .movie-row { display: flex; overflow-x: auto; overflow-y: hidden; padding: 10px 0 20px 5px; gap: 20px; scroll-behavior: smooth; }
-        .movie-row::-webkit-scrollbar { display: none; }
-        .scroll-btn {
-            position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--glass-bg);
-            border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 45px; height: 45px;
-            font-size: 1.8rem; cursor: pointer; z-index: 20; display: none; backdrop-filter: blur(5px);
-            transition: all 0.3s;
-        }
-        .scroll-btn:hover { background-color: var(--primary-color); color: white; }
-        .category-wrapper:hover .scroll-btn { display: flex; align-items: center; justify-content: center; }
-        .scroll-btn.left { left: -25px; }
-        .scroll-btn.right { right: -25px; }
 
-        /* Movie Card */
-        .movie-card {
-            flex: 0 0 180px; height: 270px; border-radius: 12px;
-            cursor: pointer; position: relative; transition: all 0.4s ease;
-            background-color: var(--card-background);
-            border: 2px solid transparent;
+        .movie-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        /* --- মুভির পোস্টার --- */
+        .movie-poster {
+            flex-shrink: 0; /* পোস্টার যেন সংকুচিত না হয় */
+            width: 180px;
+            margin-right: 1rem;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
             overflow: hidden;
         }
-        .movie-card:hover { 
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 0 25px var(--primary-color), 0 0 40px var(--secondary-color);
-            border-color: var(--primary-color);
-            z-index: 10;
-        }
-        .movie-card img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s ease; }
-        .movie-card:hover img { opacity: 0.3; }
-        .card-info {
-            position: absolute; bottom: 0; width: 100%; padding: 15px;
-            transform: translateY(100%);
-            transition: all 0.4s ease;
-        }
-        .movie-card:hover .card-info { transform: translateY(0); }
-        .card-title { font-family: 'Poppins', sans-serif; font-size: 1rem; margin: 0 0 8px 0; font-weight: 600; }
-        .card-rating .star { color: #f5c518; }
-        
-        #message-area { text-align: center; font-size: 1.2rem; margin-top: 40px; color: var(--text-secondary-color); }
-        
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--glass-bg); backdrop-filter: blur(8px); }
-        .modal-content { 
-            background-color: var(--surface-color); 
-            margin: 5% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 900px; position: relative; 
-            animation: slideIn 0.5s;
-            border: 1px solid var(--primary-color);
-            box-shadow: 0 0 50px rgba(12, 10, 26, 0.8);
-        }
-        @keyframes slideIn { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-        .close-button { color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
-        .close-button:hover, .close-button:focus { color: var(--primary-color); }
-        
-        #modal-loader { display: flex; justify-content: center; align-items: center; min-height: 300px; }
-        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #modal-body { display: none; flex-direction: row; gap: 30px; }
-        #modal-poster { max-width: 300px; border-radius: 8px; align-self: flex-start; }
-        #modal-info { flex: 1; }
-        #modal-title { font-family: 'Poppins', sans-serif; font-size: 2.5rem; margin-bottom: 15px; line-height: 1.2; }
-        .meta-info-container { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-bottom: 15px; color: #ccc; }
-        #modal-rating .star { color: #f5c518; }
-        .plot { line-height: 1.7; margin-bottom: 25px; }
-        #watch-trailer-btn { 
-            background-color: var(--primary-color); color: white; border: none; padding: 12px 25px;
-            border-radius: 5px; cursor: pointer; font-size: 1rem; margin-bottom: 20px; font-weight: 600;
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block; /* ছবির নিচে সামান্য ফাঁকা স্থান দূর করতে */
         }
-        #trailer-container { margin-bottom: 20px; }
-        #trailer-container iframe { width: 100%; height: 350px; border: none; border-radius: 8px; }
 
-        .credits-section h3 { border-bottom: 2px solid var(--surface-color); padding-bottom: 8px; margin-bottom: 15px; font-family: 'Poppins', sans-serif; font-weight: 600; }
-        .provider-list { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; list-style: none; overflow-x: auto; }
-        .provider-list img { width: 45px; height: 45px; border-radius: 8px; }
+        /* হোভার এফেক্ট */
+        .movie-poster:hover {
+            transform: scale(1.08) translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
 
-        /* Cast Section */
-        #cast-list { display: flex; gap: 15px; padding-bottom: 15px;}
-        .cast-member { flex: 0 0 100px; text-align: center; }
-        .cast-member img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; background-color: var(--surface-color); }
-        .cast-member p { font-size: 0.9rem; margin: 0; font-weight: bold; }
-        .cast-member span { font-size: 0.8rem; color: var(--text-secondary-color); }
-        
-        /* Footer */
-        footer { text-align: center; padding: 40px 20px; margin-top: 60px; color: var(--text-secondary-color); border-top: 1px solid var(--surface-color); }
-        footer img { width: 100px; vertical-align: middle; margin-left: 10px; filter: grayscale(1) brightness(1.5); }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* --- মোবাইল ডিভাইসের জন্য রেসপন্সিভ ডিজাইন --- */
         @media (max-width: 768px) {
-            header { flex-direction: column; align-items: center; gap: 15px; background-color: var(--glass-bg) !important; backdrop-filter: blur(10px) !important; }
-            .search-container { width: 90%; }
-            #hero-banner { height: 80vh; text-align: center; align-items: center; }
-            #hero-banner::before { background: linear-gradient(to top, rgba(12, 10, 26, 1) 20%, rgba(12, 10, 26, 0.5) 70%, rgba(12, 10, 26, 0) 100%);}
-            .hero-content { max-width: 100%; display: flex; flex-direction: column; align-items: center;}
-            #hero-title { font-size: 2.5rem; }
-            #hero-overview { max-width: 100%; }
-            #modal-body { flex-direction: column; align-items: center; }
-            #trailer-container iframe { height: 250px; }
-            .scroll-btn { display: none !important; } /* Hide scroll buttons on mobile */
+            .header {
+                padding: 1rem 1.5rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .main-container {
+                padding: 1rem 1.5rem;
+            }
+
+            .category-title {
+                font-size: 1.4rem;
+            }
+
+            .movie-poster {
+                width: 140px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header id="page-header">
-            <h1>CineVerse</h1>
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search Movies or TV Shows...">
-            </div>
-        </header>
+    <header class="header">
+        <a href="#" class="logo">MovieFlix</a>
+    </header>
 
-        <main>
-            <section id="hero-banner"></section>
-
-            <!-- === Adsterra Banner Ad START === -->
-            <div style="text-align: center; margin: 20px 0;">
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : 'adbcfe51eacd139e7821b7f768acc91d',
-                        'format' : 'iframe',
-                        'height' : 90,
-                        'width' : 728,
-                        'params' : {}
-                    };
-                </script>
-                <script type="text/javascript" src="//ghettoformed.com/adbcfe51eacd139e7821b7f768acc91d/invoke.js"></script>
-            </div>
-            <!-- === Adsterra Banner Ad END === -->
-
-            <div id="main-content">
-                <section id="search-results-section" style="display: none;">
-                    <div class="category-wrapper">
-                        <h2 class="category-title">Search Results</h2>
-                        <div class="movie-row" id="search-results-row"></div>
-                    </div>
-                </section>
-                
-                <div id="message-area" style="display:none;">Loading...</div>
-
-                <div class="category-wrapper">
-                    <h2 class="category-title">Popular Movies</h2>
-                    <button class="scroll-btn left">&lt;</button>
-                    <div class="movie-row" id="popular-movies-row"></div>
-                    <button class="scroll-btn right">&gt;</button>
+    <div class="main-container">
+        <!-- Popular Section -->
+        <div class="category">
+            <h2 class="category-title">Popular on MovieFlix</h2>
+            <div class="movie-list">
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/lkryvKAGvoVl0m_O8d4a0tS22pM.jpg" alt="Lost in Space">
                 </div>
-
-                <div class="category-wrapper">
-                    <h2 class="category-title">Popular TV Shows</h2>
-                    <button class="scroll-btn left">&lt;</button>
-                    <div class="movie-row" id="popular-tv-row"></div>
-                    <button class="scroll-btn right">&gt;</button>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/77I5n038AlD48CtSflsM9e0V20u.jpg" alt="Riverdale">
                 </div>
-
-                <div class="category-wrapper">
-                    <h2 class="category-title">Top Rated Movies</h2>
-                    <button class="scroll-btn left">&lt;</button>
-                    <div class="movie-row" id="top-rated-movies-row"></div>
-                    <button class="scroll-btn right">&gt;</button>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/uN1gUjStiUol4gUv58VlhZJg3l2.jpg" alt="The Boss Baby: Back in Business">
                 </div>
-
-                <div class="category-wrapper">
-                    <h2 class="category-title">Top Rated TV Shows</h2>
-                    <button class="scroll-btn left">&lt;</button>
-                    <div class="movie-row" id="top-rated-tv-row"></div>
-                    <button class="scroll-btn right">&gt;</button>
+                <div class="movie-poster">
+                     <img src="https://image.tmdb.org/t/p/w500/ps2oKfhY6inHn_fM5P5v7tU2gK9.jpg" alt="Santa Clarita Diet">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg" alt="Money Heist">
                 </div>
             </div>
-        </main>
-        
-        <!-- === Adsterra Bottom Banner Ad START === -->
-        <div style="text-align: center; margin: 40px 0 20px 0;">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : 'adbcfe51eacd139e7821b7f768acc91d',
-                    'format' : 'iframe',
-                    'height' : 90,
-                    'width' : 728,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="//ghettoformed.com/adbcfe51eacd139e7821b7f768acc91d/invoke.js"></script>
         </div>
-        <!-- === Adsterra Bottom Banner Ad END === -->
 
-        <footer>
-            <p>This product uses the TMDb API but is not endorsed or certified by TMDb.</p>
-            <a href="https://www.themoviedb.org/" target="_blank">
-                <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_2-9665a76b1ae401a510ec1e0ca40ddcb3b0cfe45f1d51b77a308fea0845fb8116.svg" alt="TMDb Logo">
-            </a>
-        </footer>
-    </div>
+        <!-- Trending Now Section -->
+        <div class="category">
+            <h2 class="category-title">Trending Now</h2>
+            <div class="movie-list">
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/x2LSRK2Cm7MZhvfyAqiWPzGsEms.jpg" alt="Stranger Things">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg" alt="Money Heist">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/yYK5h0de3lq4XkQtekB70S5IjaS.jpg" alt="A Korean Odyssey">
+                </div>
+                 <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/k2ja53kI5r3715d31XGtxgVdae5.jpg" alt="Designated Survivor">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/uN1gUjStiUol4gUv58VlhZJg3l2.jpg" alt="The Boss Baby: Back in Business">
+                </div>
+            </div>
+        </div>
 
-    <!-- Details Modal -->
-    <div id="details-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <div id="modal-loader"><div class="spinner"></div></div>
-            <div id="modal-body">
-                <img id="modal-poster" src="" alt="Poster">
-                <div id="modal-info">
-                    <h2 id="modal-title"></h2>
-                    <div class="meta-info-container">
-                        <span id="modal-year"></span>
-                        <span id="modal-runtime"></span>
-                        <span id="modal-rating"><span class="star">&#9733;</span> </span>
-                    </div>
-                    <div id="modal-genres" class="meta-info-container"></div>
-                    <p class="plot" id="modal-plot"></p>
-                    
-                    <button id="watch-trailer-btn" style="display:none;">Watch Trailer</button>
-                    <div id="trailer-container"></div>
-                    
-                    <div class="credits-section" id="cast-section" style="display:none;">
-                        <h3>Top Billed Cast</h3>
-                        <div id="cast-list" class="provider-list"></div>
-                    </div>
-
-                    <div class="credits-section" id="watch-providers-section">
-                        <h3>Where to Watch</h3>
-                        <ul id="watch-providers-list" class="provider-list"></ul>
-                    </div>
+        <!-- US TV Shows Section -->
+        <div class="category">
+            <h2 class="category-title">US TV Shows</h2>
+            <div class="movie-list">
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/yQxPYaD74JcpeN0e02pAMai94b0.jpg" alt="13 Reasons Why">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/6i0eF4Bfni4CI6k5GBl2yQPmPah.jpg" alt="Narcos">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/k2ja53kI5r3715d31XGtxgVdae5.jpg" alt="Designated Survivor">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/oEa4m2jcM2j1G2iVE2iJgDh6Vb.jpg" alt="Friends">
+                </div>
+                <div class="movie-poster">
+                    <img src="https://image.tmdb.org/t/p/w500/77I5n038AlD48CtSflsM9e0V20u.jpg" alt="Riverdale">
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const TMDB_API_KEY = 'f69f88345a21c3a0ccc9e664cecba3b7';
-        const API_BASE_URL = 'https://api.themoviedb.org/3';
-        const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-        const BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
-        const NO_IMAGE_URL = 'https://via.placeholder.com/500x750.png?text=No+Image';
-        const NO_PROFILE_IMG_URL = 'https://via.placeholder.com/100x100.png?text=N/A';
-        
-        // === Adsterra Direct Link Integration START ===
-        const ADSTERRA_DIRECT_LINK = 'https://ghettoformed.com/j9fsftpf72?key=7a528a7eb115b73149357237981fb657';
-        let adTriggeredThisSession = false; 
-        // === Adsterra Direct Link Integration END ===
-
-        // DOM Elements
-        const searchInput = document.getElementById('search-input');
-        const mainContent = document.getElementById('main-content');
-        const searchResultsSection = document.getElementById('search-results-section');
-        const searchResultsRow = document.getElementById('search-results-row');
-        const heroBanner = document.getElementById('hero-banner');
-        const modal = document.getElementById('details-modal');
-        const closeModalButton = document.querySelector('.close-button');
-        const pageHeader = document.getElementById('page-header');
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', initializeApp);
-        searchInput.addEventListener('input', debounce(performSearch, 500));
-        mainContent.addEventListener('click', handleMainContentClick);
-        heroBanner.addEventListener('click', (event) => {
-            if (event.target.id === 'hero-details-btn') {
-                handleAdAndShowDetails(event.target.dataset.id, 'movie');
-            }
-        });
-        closeModalButton.addEventListener('click', () => hideModal());
-        window.addEventListener('click', (event) => { if (event.target == modal) hideModal(); });
-        window.addEventListener('scroll', handleHeaderScroll);
-        
-        // --- NEW: Scroll Animation Observer ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-
-        // --- Core Functions ---
-        async function initializeApp() {
-            // Observe all category wrappers for scroll animations
-            document.querySelectorAll('.category-wrapper').forEach(el => observer.observe(el));
-            
-            populateHeroBanner();
-            fetchAndDisplayRow('/movie/popular', '#popular-movies-row', 'movie');
-            fetchAndDisplayRow('/tv/popular', '#popular-tv-row', 'tv');
-            fetchAndDisplayRow('/movie/top_rated', '#top-rated-movies-row', 'movie');
-            fetchAndDisplayRow('/tv/top_rated', '#top-rated-tv-row', 'tv');
-        }
-        
-        // --- NEW: Handle Header Background on Scroll ---
-        function handleHeaderScroll() {
-            if (window.scrollY > 50) {
-                pageHeader.classList.add('scrolled');
-            } else {
-                pageHeader.classList.remove('scrolled');
-            }
-        }
-
-        function handleMainContentClick(event) {
-            const card = event.target.closest('.movie-card');
-            if (card) {
-                handleAdAndShowDetails(card.dataset.id, card.dataset.mediaType);
-                return;
-            }
-
-            if (event.target.matches('.scroll-btn')) {
-                const row = event.target.parentElement.querySelector('.movie-row');
-                const scrollAmount = row.clientWidth * 0.9;
-                const direction = event.target.classList.contains('right') ? 1 : -1;
-                row.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
-            }
-        }
-        
-        function handleAdAndShowDetails(id, mediaType) {
-            if (!adTriggeredThisSession) {
-                window.open(ADSTERRA_DIRECT_LINK, '_blank');
-                adTriggeredThisSession = true;
-            }
-            showContentDetails(id, mediaType);
-        }
-
-        function debounce(func, delay) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
-            };
-        }
-
-        async function fetchFromTMDb(endpoint, params = '') {
-            const url = `${API_BASE_URL}${endpoint}?api_key=${TMDB_API_KEY}&language=en-US${params}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                return await response.json();
-            } catch (error) {
-                console.error(`Failed to fetch from TMDb: ${endpoint}`, error);
-                throw error;
-            }
-        }
-        
-        async function populateHeroBanner() {
-            try {
-                const data = await fetchFromTMDb('/movie/popular', '&append_to_response=genres');
-                const topMovie = data.results.find(m => m.backdrop_path && m.overview);
-                if (!topMovie) return;
-                
-                // Fetch full details to get genres
-                const movieDetails = await fetchFromTMDb(`/movie/${topMovie.id}`);
-
-                heroBanner.style.backgroundImage = `url(${BACKDROP_BASE_URL}${topMovie.backdrop_path})`;
-                
-                const genreTags = movieDetails.genres.slice(0, 3).map(g => `<span class="genre-tag">${g.name}</span>`).join('');
-                
-                heroBanner.innerHTML = `
-                    <div class="hero-content">
-                        <h2 id="hero-title">${topMovie.title}</h2>
-                        <p id="hero-overview">${topMovie.overview.substring(0, 200)}...</p>
-                        <div class="hero-meta">${genreTags}</div>
-                        <button id="hero-details-btn" data-id="${topMovie.id}">View Details</button>
-                    </div>`;
-            } catch (error) {
-                console.error("Failed to populate hero banner:", error);
-                heroBanner.style.display = 'none';
-            }
-        }
-
-        async function fetchAndDisplayRow(endpoint, containerSelector, mediaType) {
-            const container = document.querySelector(containerSelector);
-            try {
-                const data = await fetchFromTMDb(endpoint);
-                if (data.results.length > 0) {
-                    container.innerHTML = data.results.map(content => createContentCardHTML(content, mediaType)).join('');
-                } else {
-                    container.innerHTML = `<p>No content found.</p>`;
-                }
-            } catch (error) {
-                container.innerHTML = `<p>Could not load this category.</p>`;
-            }
-        }
-
-        function createContentCardHTML(content, mediaType) {
-            const posterUrl = content.poster_path ? `${IMG_BASE_URL}${content.poster_path}` : NO_IMAGE_URL;
-            const title = content.title || content.name;
-            const rating = content.vote_average ? content.vote_average.toFixed(1) : 'N/A';
-            return `
-                <div class="movie-card" data-id="${content.id}" data-media-type="${mediaType}">
-                    <img src="${posterUrl}" alt="${title}" loading="lazy">
-                    <div class="card-info">
-                        <h4 class="card-title">${title}</h4>
-                        <p class="card-rating"><span class="star">&#9733;</span> ${rating}</p>
-                    </div>
-                </div>`;
-        }
-        
-        async function performSearch() {
-            const query = searchInput.value.trim();
-            const searchWrapper = document.getElementById('search-results-section').querySelector('.category-wrapper');
-
-            if (!query) {
-                searchResultsSection.style.display = 'none';
-                observer.unobserve(searchWrapper); // Stop observing when hidden
-                return;
-            }
-
-            searchResultsSection.style.display = 'block';
-            observer.observe(searchWrapper); // Start observing when visible
-            searchResultsRow.innerHTML = `<p>Searching...</p>`;
-            try {
-                const data = await fetchFromTMDb(`/search/multi`, `&query=${encodeURIComponent(query)}`);
-                const filteredResults = data.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
-                if (filteredResults.length > 0) {
-                    searchResultsRow.innerHTML = filteredResults.map(content => createContentCardHTML(content, content.media_type)).join('');
-                } else {
-                    searchResultsRow.innerHTML = `<p>No results found for "${query}".</p>`;
-                }
-            } catch (error) {
-                searchResultsRow.innerHTML = `<p>Error during search. Please try again.</p>`;
-            }
-        }
-        
-        function hideModal() {
-            modal.style.display = 'none';
-            document.getElementById('trailer-container').innerHTML = ''; // Stop the trailer
-        }
-
-        async function showContentDetails(id, mediaType) {
-            document.getElementById('modal-loader').style.display = 'flex';
-            document.getElementById('modal-body').style.display = 'none';
-            modal.style.display = 'block';
-            
-            try {
-                const [details, providers, videos, credits] = await Promise.all([
-                    fetchFromTMDb(`/${mediaType}/${id}`),
-                    fetchFromTMDb(`/${mediaType}/${id}/watch/providers`),
-                    fetchFromTMDb(`/${mediaType}/${id}/videos`),
-                    fetchFromTMDb(`/${mediaType}/${id}/credits`)
-                ]);
-                populateModal(details, providers, videos, credits, mediaType);
-            } catch (error) {
-                document.getElementById('modal-loader').innerHTML = '<p>Sorry, could not fetch details.</p>';
-            }
-        }
-        
-        function populateModal(details, providers, videos, credits, mediaType) {
-            document.getElementById('modal-poster').src = details.poster_path ? `${IMG_BASE_URL}${details.poster_path}` : NO_IMAGE_URL;
-            document.getElementById('modal-title').textContent = details.title || details.name;
-            document.getElementById('modal-plot').textContent = details.overview || 'Plot not available.';
-            document.getElementById('modal-year').textContent = (details.release_date || details.first_air_date || '').substring(0, 4);
-            const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : null);
-            document.getElementById('modal-runtime').textContent = runtime ? `${runtime} min` + (mediaType === 'tv' ? ' / episode' : '') : '';
-            document.getElementById('modal-rating').innerHTML = `<span class="star">&#9733;</span> ${details.vote_average ? details.vote_average.toFixed(1) : 'N/A'}`;
-            document.getElementById('modal-genres').innerHTML = details.genres ? details.genres.map(g => `<span>${g.name}</span>`).join('') : '';
-
-            const trailerBtn = document.getElementById('watch-trailer-btn');
-            const trailerContainer = document.getElementById('trailer-container');
-            trailerContainer.innerHTML = '';
-            trailerBtn.style.display = 'none';
-            const officialTrailer = videos.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
-            if (officialTrailer) {
-                trailerBtn.style.display = 'inline-block';
-                trailerBtn.onclick = () => {
-                    trailerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${officialTrailer.key}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
-                    trailerBtn.style.display = 'none';
-                };
-            }
-
-            const castSection = document.getElementById('cast-section');
-            const castList = document.getElementById('cast-list');
-            const topCast = credits.cast.slice(0, 8);
-            if (topCast && topCast.length > 0) {
-                castList.innerHTML = topCast.map(member => `
-                    <div class="cast-member">
-                        <img src="${member.profile_path ? IMG_BASE_URL + member.profile_path : NO_PROFILE_IMG_URL}" alt="${member.name}" loading="lazy">
-                        <p>${member.name}</p>
-                        <span>${member.character}</span>
-                    </div>`).join('');
-                castSection.style.display = 'block';
-            } else {
-                castSection.style.display = 'none';
-            }
-
-            const providerList = document.getElementById('watch-providers-list');
-            const usProviders = providers.results.US?.flatrate;
-            if (usProviders && usProviders.length > 0) {
-                providerList.innerHTML = usProviders.map(p => `<li><img src="${IMG_BASE_URL}${p.logo_path}" title="${p.provider_name}" alt="${p.provider_name}"></li>`).join('');
-            } else {
-                providerList.innerHTML = '<li>Not available for streaming in this region.</li>';
-            }
-            
-            document.getElementById('modal-loader').style.display = 'none';
-            document.getElementById('modal-body').style.display = 'flex';
-        }
-
-    </script>
 </body>
-</html>
+</html>```
+
+আশা করি এই নতুন ডিজাইনটি আপনার পছন্দ হবে
